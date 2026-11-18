@@ -1,0 +1,35 @@
+---
+description: Java 21 and Spring Boot conventions for the ticket backend
+globs: backend/**/src/main/**/*.java
+alwaysApply: false
+---
+
+# Java 21 + Spring Boot (backend)
+
+## Layout
+
+- Packages: `domain` (entities, enums), `repository`, `service`, `web` (controllers, DTOs, advice), `config`, `exception`.
+- Controllers stay thin; business rules and state transitions live in `service` only.
+- Never expose JPA entities from REST; use request/response DTOs.
+
+## Validation and errors
+
+- Use Jakarta Bean Validation on request DTOs (`@NotBlank`, `@NotNull`, etc.) with `@Valid` on controller parameters.
+- Map domain failures to HTTP via `@RestControllerAdvice` (404 not found, 409 invalid status transition).
+
+## Persistence
+
+- Enums for `TicketStatus` and `Priority`; store as string in DB.
+- Use Flyway migrations; do not rely on `ddl-auto=create` in committed config.
+- Spring profiles: default H2 (file-backed for dev persistence); `docker` profile for PostgreSQL.
+
+## Security and config
+
+- No secrets, API keys, or production passwords in source or committed YAML.
+- Use environment variables and `.env.example` with placeholder names only.
+- Do not disable TLS or use `allowedOrigins("*")` in non-local profiles.
+
+## Style
+
+- Prefer constructor injection; `Optional` for single-entity lookups that may be absent.
+- Keep methods small; one place for status transitions (`StatusTransitionService`).

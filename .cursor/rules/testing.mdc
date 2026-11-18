@@ -1,0 +1,31 @@
+---
+description: Testing standards for backend and frontend
+globs: backend/**/src/test/**/*.java,frontend/**/*.test.ts,frontend/**/*.test.tsx,frontend/**/__tests__/**
+alwaysApply: false
+---
+
+# Testing guidelines
+
+## Backend (JUnit 5)
+
+- Unit-test `StatusTransitionService`: every allowed edge and representative forbidden edges.
+- **Mandatory:** `TicketStatusTransitionIntegrationTest` (or equivalent) with `@SpringBootTest` + H2:
+  - Allowed: OPEN→IN_PROGRESS, IN_PROGRESS→RESOLVED, RESOLVED→CLOSED, OPEN→CANCELLED, IN_PROGRESS→CANCELLED.
+  - Forbidden (expect 409): CLOSED→OPEN, RESOLVED→OPEN, CANCELLED→OPEN.
+- Use `@WebMvcTest` or MockMvc for validation (400) and not-found (404) without full context when appropriate.
+- Name tests `methodName_condition_expectedOutcome`.
+
+## Data and isolation
+
+- Tests must not depend on execution order; use `@Transactional` rollback or dedicated test data per test.
+- Do not hit real PostgreSQL in unit/integration tests unless using Testcontainers explicitly in that test class.
+
+## Frontend
+
+- Test API client error parsing (400 field errors, 409 transition message) where behavior is non-trivial.
+- Prefer testing user-visible behavior over implementation details.
+
+## Before merge
+
+- `./mvnw test` in `backend/` must pass.
+- Do not weaken assertions to make tests pass; fix production code or update `spec/` first.

@@ -1,0 +1,58 @@
+---
+description: REST API naming, queries, and error response shape
+globs: backend/**/src/main/java/**/web/**/*.java,backend/**/src/main/java/**/*Controller.java,backend/**/src/main/java/**/*Exception*.java,spec/api-contract.md,frontend/**/lib/**/*.ts,frontend/**/api/**/*.ts
+alwaysApply: false
+---
+
+# API standards
+
+## Base path and resources
+
+- Base path: `/api`.
+- Resources: plural nouns (`/api/tickets`, `/api/tickets/{id}`).
+- Status changes: `POST /api/tickets/{id}/status` with body `{ "status": "IN_PROGRESS" }` — not mixed into generic PATCH without validation.
+- Comments: `POST /api/tickets/{id}/comments`.
+
+## List, search, filter
+
+- `GET /api/tickets` supports:
+  - `status` — exact match on ticket status enum.
+  - `q` — keyword search on title and description (backend-defined, documented in spec).
+  - `page`, `size` — optional pagination (0-based or 1-based per spec; stay consistent).
+
+## HTTP semantics
+
+| Situation | Status |
+|-----------|--------|
+| Validation failure | 400 |
+| Missing ticket | 404 |
+| Invalid status transition | 409 |
+| Success create | 201 |
+| Success read/update | 200 |
+
+## Error JSON (consistent shape)
+
+Use a single problem style across endpoints, for example:
+
+```json
+{
+  "status": 400,
+  "title": "Validation failed",
+  "detail": "One or more fields are invalid",
+  "errors": [
+    { "field": "title", "message": "must not be blank" }
+  ]
+}
+```
+
+For 409 transitions, include `detail` with human-readable reason (e.g. `Cannot transition from CLOSED to OPEN`).
+
+## Documentation
+
+- Keep `spec/api-contract.md` in sync with controllers.
+- Expose OpenAPI via springdoc (`/swagger-ui.html` or `/swagger-ui/index.html`).
+
+## CORS
+
+- Local dev: allow `http://localhost:3000` only.
+- Do not commit wildcard CORS for production profiles.

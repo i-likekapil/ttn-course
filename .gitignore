@@ -1,0 +1,57 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+**/secrets/
+**/application-local.yml
+**/application-local.properties
+
+# Java / Spring Boot
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.log
+hs_err_pid*
+
+# H2 local database files (file-backed dev persistence)
+*.mv.db
+*.trace.db
+backend/data/
+
+# PostgreSQL local data (Docker volumes or bind mounts)
+postgres-data/
+pgdata/
+.docker/pgdata/
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.turbo/
+frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# IDE and OS
+.idea/
+*.iml
+.vscode/
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# Test and coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Optional: keep SpecStory exports in repo for assignment submission.
+# Uncomment the next line only if you prefer not to commit large chat exports:
+# .specstory/history/*
